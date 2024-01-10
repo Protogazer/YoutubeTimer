@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "YouTimer",
+    "version": "1.0",
+
+    "description": "Tracks time spent on youtube, and blocks the site if I spend too much time on there",
+
+    "permissions": [
+        "activeTab",
+        "storage"
+    ],
+
+    "browser_action": {
+        "default_title": "YouTimer",
+        "default_popup": "popup/popup.html"
+    },
+
+    "background": {
+        "scripts": [
+            "background_scripts/blocker.js"
+        ]
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://youtube.com/*"],
+            "js": ["content_scripts/timer.js"]
+        }
+    ]
+}
