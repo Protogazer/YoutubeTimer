@@ -10,21 +10,10 @@
         "storage"
     ],
 
-    "browser_action": {
-        "default_title": "YouTimer",
-        "default_popup": "popup/popup.html"
-    },
-
-    "background": {
-        "scripts": [
-            "background_scripts/blocker.js"
-        ]
-    },
-
     "content_scripts": [
         {
-            "matches": ["*://youtube.com/*"],
-            "js": ["content_scripts/timer.js"]
+            "matches": ["*://*.youtube.com/watch*"],
+            "js": ["scripts/timer.js"]
         }
     ]
 }
