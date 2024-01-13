@@ -1,4 +1,5 @@
-// this script will run when on youtube's domain
+// this script will run when on youtube's domain and is active tab
+
 /**
  * TODO
  * once timer is <= 0, block further redirects from the page, and show a popup
@@ -71,7 +72,7 @@ function blockPage() {
     console.log("BLOCK THIS!!");
 }
 
-window.onload = (event) => {
-    countdown();
+window.onload =  (event) => {
     console.log("countdown started");
+    countdown();
 };

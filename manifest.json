@@ -10,10 +10,14 @@
         "storage"
     ],
 
+    "background": {
+        "scripts": ["scripts/timer.js"]
+    },
+
     "content_scripts": [
         {
-            "matches": ["*://*.youtube.com/watch*"],
-            "js": ["scripts/timer.js"]
+            "matches": ["*://*.youtube.com/*", "*://*.mozilla.org/*"],
+            "js": ["scripts/detector.js"]
         }
     ]
 }
