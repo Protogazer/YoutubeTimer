@@ -1,3 +1,7 @@
+// TODO
+// Funciton is slow, limit JSON parse to the first time the countdown starts
+// and limit stringify to run and save when the countdown pauses.
+
 /**
  * TODO: use the timestamp to calculate time,
  * not the inteval(could vary slightly depending on CPU)
@@ -41,7 +45,7 @@ function countdown() {
         intervalId = null;
     }
     else {
-        console.log("Time remaining: ", clockInfo.clock);
+        console.log("Time remaining: ", counter.clock);
     }
 }
 
@@ -62,6 +66,6 @@ if (intervalId === null) {
      */
     intervalId = setInterval(function () {
         countdown(timeInterval);
-        console.log(clockInfo);
+        console.log(JSON.parse(localStorage.getItem("clockInfo")));
     },timeInterval);
 };
