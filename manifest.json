@@ -11,7 +11,7 @@
     ],
 
     "background": {
-        "scripts": ["scripts/repeater.js"]
+        "scripts": ["scripts/timer_v2.js"]
     },
 
     "content_scripts": [
