@@ -1,6 +1,6 @@
 // TODO
-// Funciton is slow, limit JSON parse to the first time the countdown starts
-// and limit stringify to run and save when the countdown pauses.
+// Funciton may run slow, limit JSON parse to the first time the countdown starts
+// and limit stringify to run and save when the countdown pauses or continues.
 
 /**
  * TODO: use the timestamp to calculate time,
@@ -69,3 +69,22 @@ if (intervalId === null) {
         console.log(JSON.parse(localStorage.getItem("clockInfo")));
     },timeInterval);
 };
+
+
+
+// listen for tab changes and check url for *.youtube.com/watch*
+// if () // if youtube, run timer script
+// console.log("DETECTOR LOADED!");
+
+// example modified from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/query
+function messageTimer(tabs) {
+    console.log("DETECTOR FOUND A TAB!");
+    console.log(tabs[0].id);
+    // run timer countdown
+}
+
+function onError(error) {
+    console.error(`Error: ${error}`);
+}
+
+browser.tabs.query({ active: true, audible: true, currentWindow: true}).then(messageTimer, onError);

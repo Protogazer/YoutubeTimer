@@ -7,17 +7,11 @@
 
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "tabs"
     ],
 
     "background": {
         "scripts": ["scripts/timer_v2.js"]
-    },
-
-    "content_scripts": [
-        {
-            "matches": ["*://*.youtube.com/*", "*://*.mozilla.org/*"],
-            "js": ["scripts/detector.js"]
-        }
-    ]
+    }
 }
