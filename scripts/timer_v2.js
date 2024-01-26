@@ -57,7 +57,7 @@ function pauseCountdown() {
     console.log("Timer Paused");
 }
 
-
+// Start timer
 // check that another timer isn't already running
 if (intervalId === null) {
     /**
@@ -77,14 +77,32 @@ if (intervalId === null) {
 // console.log("DETECTOR LOADED!");
 
 // example modified from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/query
-function messageTimer(tabs) {
-    console.log("DETECTOR FOUND A TAB!");
-    console.log(tabs[0].id);
-    // run timer countdown
-}
+    // function messageTimer(tabs) {
+    //     console.log("DETECTOR FOUND A TAB!");
+    //     console.log(tabs[0].id);
+    //     // run timer countdown
+    // }
 
-function onError(error) {
-    console.error(`Error: ${error}`);
-}
+    // function onError(error) {
+    //     console.error(`Error: ${error}`);
+    // }
 
-browser.tabs.query({ active: true, audible: true, currentWindow: true}).then(messageTimer, onError);
+    // browser.tabs.query({ active: true, audible: true, currentWindow: true}).then(messageTimer, onError);
+
+
+// handle the message send from the content script
+function handleMessage(request, sender, sendResponse) {
+    // check if current tab is active and playing
+    let currentTab = browser.tabs.query({ active: true, audible: true, currentWindow: true});
+    let senderTab = sender.tab;
+
+    console.log(`Message.js sent a message: ${request.status}`)
+    // if page is visible and actively playing, start counter, otherwise try once again.
+    if (request.status === "visible" && currentTab[0].id === senderTab.id) {
+        sendResponse({ response: "timer is starting"})
+        countdown();
+    }
+};
+
+
+browser.runtime.onMessage.addListener(handleMessage);

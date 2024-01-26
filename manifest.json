@@ -13,5 +13,12 @@
 
     "background": {
         "scripts": ["scripts/timer_v2.js"]
-    }
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://*.youtube.com/watch*"],
+            "js": ["scripts/message.js"]
+        }
+    ]
 }
