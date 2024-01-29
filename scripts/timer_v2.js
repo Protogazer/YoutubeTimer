@@ -26,6 +26,7 @@ var clockInfo = {clock:clock, timestamp:day.getDate()};
 // create var for interval to save and call Id from
 var intervalId = null;
 
+
 // save clockInfo to local storage if not saved already
 if (! localStorage.getItem("clockInfo")) {
     localStorage.setItem("clockInfo", JSON.stringify(clockInfo));
@@ -50,59 +51,55 @@ function countdown() {
 }
 
 
-// pauses the countdown interval function and sets intervalId to null.
-function pauseCountdown() {
+// pauses the timer and sets intervalId to null.
+function pauseTimer() {
     clearInterval(intervalId);
     intervalId = null;
     console.log("Timer Paused");
 }
 
 // Start timer
-// check that another timer isn't already running
-if (intervalId === null) {
-    /**
-     * the setInterval function does not work with CSP evals because it can execute strings.
-     * Because of this, the countdown must be called inside an inline function. 
-     */
-    intervalId = setInterval(function () {
+function startTimer() {
+    // check that another timer isn't already running
+    if (intervalId === null) {
+        /**
+         * the setInterval function does not work with CSP evals because it can execute strings.
+         * Because of this, the countdown must be called inside an inline function. 
+         */
+        intervalId = setInterval(function () {
+            countdown(timeInterval);
+            console.log(JSON.parse(localStorage.getItem("clockInfo")));
+        },timeInterval);
+    }
+    else{
         countdown(timeInterval);
         console.log(JSON.parse(localStorage.getItem("clockInfo")));
-    },timeInterval);
-};
-
-
-
-// listen for tab changes and check url for *.youtube.com/watch*
-// if () // if youtube, run timer script
-// console.log("DETECTOR LOADED!");
-
-// example modified from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/query
-    // function messageTimer(tabs) {
-    //     console.log("DETECTOR FOUND A TAB!");
-    //     console.log(tabs[0].id);
-    //     // run timer countdown
-    // }
-
-    // function onError(error) {
-    //     console.error(`Error: ${error}`);
-    // }
-
-    // browser.tabs.query({ active: true, audible: true, currentWindow: true}).then(messageTimer, onError);
-
-
-// handle the message send from the content script
-function handleMessage(request, sender, sendResponse) {
-    // check if current tab is active and playing
-    let currentTab = browser.tabs.query({ active: true, audible: true, currentWindow: true});
-    let senderTab = sender.tab;
-
-    console.log(`Message.js sent a message: ${request.status}`)
-    // if page is visible and actively playing, start counter, otherwise try once again.
-    if (request.status === "visible" && currentTab[0].id === senderTab.id) {
-        sendResponse({ response: "timer is starting"})
-        countdown();
     }
 };
 
 
+// handle message
+function handleMessage(request, sender, sendResponse) {
+    // check if current tab is active and playing
+    let currentTab = browser.tabs.query({ active: true, currentWindow: true});
+    let senderTab = sender.tab;
+    console.log("CurrentTab:",currentTab);
+    console.log("senderTab: ", senderTab);
+
+    console.log(`Message.js sent a message: ${request.status}`)
+    // if page is visible and actively playing, start counter, otherwise try once again.
+    // && currentTab[0].id === senderTab.id
+    if (request.status === "visible") {
+        console.log("[timer.js] Starting Timer");
+        sendResponse({ response: "timer is starting"});
+        startTimer();
+    }
+    if (request.status === "invisible") {
+        console.log("[timer.js] Pausing Timer.");
+        sendResponse( { response: "pausing timer"});
+        pauseTimer();
+    }
+};
+
+// listen for content script message
 browser.runtime.onMessage.addListener(handleMessage);
