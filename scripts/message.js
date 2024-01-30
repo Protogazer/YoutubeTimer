@@ -6,6 +6,36 @@
 
 console.log("Message.js Loaded!")
 
+var video = document.querySelector("video");
+
+// document.addEventListener("DOMContentLoaded", (event) => {
+    //     const triggerURL = "youtube.com/watch"; 
+    //     let tabURL = document.URL;
+    //     if ()
+    // })
+    
+
+    // TODO:
+    /**
+     * detect video
+     * start timer when playing
+     * pause timer when paused or ended
+     * 
+     * No need for visibility and all that if it works!
+     */
+
+document.addEventListener("play", (event) => {
+    // set play variable to true
+    // checkStatus()
+})
+
+
+function checkStatus() {
+    // if play = true AND if visible:
+    // start timer
+
+    // else, pause timer
+}
 
 // add page visibility listener
 document.addEventListener("visibilitychange", () => {

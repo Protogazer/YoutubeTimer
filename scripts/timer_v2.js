@@ -89,6 +89,8 @@ function handleMessage(request, sender, sendResponse) {
     console.log(`Message.js sent a message: ${request.status}`)
     // if page is visible and actively playing, start counter, otherwise try once again.
     // && currentTab[0].id === senderTab.id
+
+    // TODO: instead of checking currentTab vs senderTab, look for senderTab.active 'true'
     if (request.status === "visible") {
         console.log("[timer.js] Starting Timer");
         sendResponse({ response: "timer is starting"});
