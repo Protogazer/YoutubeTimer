@@ -13,7 +13,7 @@ console.log("YouTimer Loaded")
 
 
 // set default timer in minutes allow user to change
-var minutes = 1;
+var minutes = 0.2;
 
 // milliseconds per minute
 const milliseconds = 60000;
@@ -26,53 +26,61 @@ var clock = (minutes * milliseconds);
 
 // create clock object with time remaining and timestamp from when object last reset.
 var day = new Date();
-var clockInfo = {clock:clock, timestamp:day.getDate()};
+var initialClockInfo = {clock:clock, timestamp:day.getDate()};
+console.log("Initializing Clock:", initialClockInfo)
 
 // create var for interval to save and call Id from
 var intervalId = null;
 
 
-// check for clockInfo in local storage. Create if not stored already
-async function checkStorage() {
-    let gettingItem = await browser.storage.local.get("clockInfo")
-    if (gettingItem.clockInfo) {
-        console.log("Found clock info", gettingItem);
-        return;
+// check for "storageKey" in local storage. Return object if found, null otherwise
+async function checkStorage(storageKey) {
+    let gettingItem = await browser.storage.local.get(storageKey);
+
+    if (gettingItem[storageKey]) {
+        console.log("Found entry", gettingItem[storageKey]);
+        return Promise.resolve(gettingItem[storageKey]);
     }
     else {
-        console.log("creating clock info");
-        let settingItem = browser.storage.local.set({clockInfo}).then(setItem, onError);
+        return null;
     }
 }
 
-checkStorage();
+// check for a clockInfo entry, if none is found, make one
+checkStorage("clockInfo").then(returned => {
+    if (!returned) {
+        console.log("creating clock info");
+        browser.storage.local.set({"clockInfo": initialClockInfo}).then(setStorageItem, onError);
+    }
+})
 
-function setItem() {
+
+// promise handling
+function setStorageItem() {
     console.log("OK ITEM SET", browser.storage.local.get("clockInfo"));
 }
 
 function onError(error) {
-    console.log("Not Good", error);
+    console.log(error);
 }
 
 
-function countdown() {
-    let counter = JSON.parse(localStorage.getItem("clockInfo"));
-    counter.clock = counter.clock - timeInterval;
+function countdown(clockInfo) {
+    clockInfo.clock = clockInfo.clock - timeInterval;
     
     // Update localstorage info
-    localStorage.setItem("clockInfo", JSON.stringify(counter));
+    browser.storage.local.set({clockInfo});
 
     // check timer and block page if <= 0
-    if (counter.clock <= 0 ) {
+    if (clockInfo.clock <= 0 ) {
         console.log("BOOM!");
-        localStorage.setItem("blocked", true);
+        browser.storage.local.set({"blocked": true});
         clearInterval(intervalId);
         intervalId = null;
     }
     else {
-        localStorage.setItem("blocked", false);
-        console.log("Time remaining: ", counter.clock);
+        browser.storage.local.set({"blocked": false});
+        console.log("Time remaining: ", clockInfo.clock);
     }
 }
 
@@ -84,10 +92,13 @@ function pauseTimer() {
     console.log("Timer Paused");
 }
 
+
 // Start timer
-function startTimer() {
+function startTimer(clockInfo) {
+    console.log("[startTimer Function] ", clockInfo)
     // check timer is not <= 0
-    if ((JSON.parse(localStorage.getItem("clockInfo"))).clock <= 0) {
+    if (clockInfo.clock <= 0) {
+        browser.storage.local.set({"blocked": true});
         console.log("Timer has ended");
 
         // TODO send message to detection script to stop listening
@@ -102,24 +113,15 @@ function startTimer() {
          * Because of this, the countdown must be called inside an inline function. 
          */
         intervalId = setInterval(function () {
-            countdown(timeInterval);
-            console.log(JSON.parse(localStorage.getItem("clockInfo")));
+            countdown(clockInfo);
+            console.log(clockInfo.clock);
         },timeInterval);
     }
     else{
-        countdown(timeInterval);
-        console.log(JSON.parse(localStorage.getItem("clockInfo")));
+        countdown(clockInfo);
+        console.log(clockInfo);
     }
 };
-
-// TODO
-// adds or removes tab from list (can be used to block [pages with this tab id])
-function updateTabsList(tabId) {
-    // tabsList list is added to or subtracted here
-    console.log(tabId);
-    tabsList.push(tabsId);
-    console.log("tabsList: ", tabsList);
-}
 
 
 // handle message
@@ -133,7 +135,7 @@ function handleMessage(request, sender, sendResponse) {
     if (request.status === "playing") {
         console.log("[timer.js] Starting Timer");
         sendResponse({ response: "timer is starting"});
-        startTimer();
+        let checking = checkStorage("clockInfo").then(startTimer, onError)
     }
     else if (request.status === "paused") {
         console.log("[timer.js] Pausing Timer.");

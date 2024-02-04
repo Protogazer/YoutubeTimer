@@ -45,7 +45,7 @@ function handleResponse(response) {
 }
 
 function handleError(error) {
-    console.log(error);
+    console.log("printing error", error);
 }
 
 function messageTimer(message) {
