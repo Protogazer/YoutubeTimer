@@ -1,14 +1,19 @@
-// TODO
-// Funciton may run slow, limit JSON parse to the first time the countdown starts
-// and limit stringify to run and save when the countdown pauses or continues.
+/**
+ * Listens for messages from content script when video is played and paused.
+ * Initializes and maintains countdown timer that persists across sessions.
+ * Timer is reset every day at midnight, and records the date (dd only) to storage.
+ */
+
+console.log("YouTimer Loaded")
 
 /**
  * TODO: use the timestamp to calculate time,
  * not the inteval(could vary slightly depending on CPU)
  */
 
+
 // set default timer in minutes allow user to change
-var minutes = 180;
+var minutes = 1;
 
 // milliseconds per minute
 const milliseconds = 60000;
@@ -27,10 +32,28 @@ var clockInfo = {clock:clock, timestamp:day.getDate()};
 var intervalId = null;
 
 
-// save clockInfo to local storage if not saved already
-if (! localStorage.getItem("clockInfo")) {
-    localStorage.setItem("clockInfo", JSON.stringify(clockInfo));
-};
+// check for clockInfo in local storage. Create if not stored already
+async function checkStorage() {
+    let gettingItem = await browser.storage.local.get("clockInfo")
+    if (gettingItem.clockInfo) {
+        console.log("Found clock info", gettingItem);
+        return;
+    }
+    else {
+        console.log("creating clock info");
+        let settingItem = browser.storage.local.set({clockInfo}).then(setItem, onError);
+    }
+}
+
+checkStorage();
+
+function setItem() {
+    console.log("OK ITEM SET", browser.storage.local.get("clockInfo"));
+}
+
+function onError(error) {
+    console.log("Not Good", error);
+}
 
 
 function countdown() {
@@ -40,12 +63,15 @@ function countdown() {
     // Update localstorage info
     localStorage.setItem("clockInfo", JSON.stringify(counter));
 
+    // check timer and block page if <= 0
     if (counter.clock <= 0 ) {
         console.log("BOOM!");
+        localStorage.setItem("blocked", true);
         clearInterval(intervalId);
         intervalId = null;
     }
     else {
+        localStorage.setItem("blocked", false);
         console.log("Time remaining: ", counter.clock);
     }
 }
@@ -60,6 +86,15 @@ function pauseTimer() {
 
 // Start timer
 function startTimer() {
+    // check timer is not <= 0
+    if ((JSON.parse(localStorage.getItem("clockInfo"))).clock <= 0) {
+        console.log("Timer has ended");
+
+        // TODO send message to detection script to stop listening
+
+        return;
+    }
+
     // check that another timer isn't already running
     if (intervalId === null) {
         /**
@@ -77,24 +112,30 @@ function startTimer() {
     }
 };
 
+// TODO
+// adds or removes tab from list (can be used to block [pages with this tab id])
+function updateTabsList(tabId) {
+    // tabsList list is added to or subtracted here
+    console.log(tabId);
+    tabsList.push(tabsId);
+    console.log("tabsList: ", tabsList);
+}
+
 
 // handle message
 function handleMessage(request, sender, sendResponse) {
-    // check if current tab is active and playing
-    let currentTab = browser.tabs.query({ active: true, currentWindow: true});
-    let senderTab = sender.tab;
-    console.log("CurrentTab:",currentTab);
-    console.log("senderTab: ", senderTab);
+    // get sender tab info
+    // let senderTab = sender.tab;
+    // console.log("senderTab: ", senderTab);
 
     console.log(`Message.js sent a message: ${request.status}`)
-    // if page is visible and actively playing, start counter, otherwise try once again.
-    // && currentTab[0].id === senderTab.id
-    if (request.status === "visible") {
+
+    if (request.status === "playing") {
         console.log("[timer.js] Starting Timer");
         sendResponse({ response: "timer is starting"});
         startTimer();
     }
-    if (request.status === "invisible") {
+    else if (request.status === "paused") {
         console.log("[timer.js] Pausing Timer.");
         sendResponse( { response: "pausing timer"});
         pauseTimer();

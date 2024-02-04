@@ -18,7 +18,7 @@
     "content_scripts": [
         {
             "matches": ["*://*.youtube.com/watch*"],
-            "js": ["scripts/message.js"]
+            "js": ["scripts/vid_detection.js", "scripts/blocker.js"]
         }
     ]
 }
