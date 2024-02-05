@@ -9,7 +9,6 @@ browser.storage.local.onChanged.addListener(checkStatus);
 
 async function checkStatus() {
     let blockStatus = await browser.storage.local.get("blocked")
-    console.log(blockStatus);
     if (blockStatus.blocked == true) {
         console.log("[Blocker.js] Blocking tab")
         block();

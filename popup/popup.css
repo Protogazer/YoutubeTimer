@@ -1,0 +1,12 @@
+body {
+    display: block;
+    min-width: 300px;
+    background: #222222;
+    color: rgb(255, 255, 255);
+}
+
+h2 {
+    font-family: Arial;
+    text-align: center;
+    font-size: 2rem;
+}

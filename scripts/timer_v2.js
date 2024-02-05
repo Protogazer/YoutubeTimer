@@ -6,14 +6,8 @@
 
 console.log("YouTimer Loaded")
 
-/**
- * TODO: use the timestamp to calculate time,
- * not the inteval(could vary slightly depending on CPU)
- */
-
-
 // set default timer in minutes allow user to change
-var minutes = 0.2;
+var minutes = 1;
 
 // milliseconds per minute
 const milliseconds = 60000;
@@ -24,9 +18,12 @@ const timeInterval = 5000;
 // create clock for countdown
 var clock = (minutes * milliseconds);
 
+// get tomorrow's date at midnight in ms
+var tomorrow = new Date();
+tomorrow.setHours(24,0,0,0);
+
 // create clock object with time remaining and timestamp from when object last reset.
-var day = new Date();
-var initialClockInfo = {clock:clock, timestamp:day.getDate()};
+var initialClockInfo = {clock:clock, timestamp:Date.now()};
 console.log("Initializing Clock:", initialClockInfo)
 
 // create var for interval to save and call Id from
@@ -45,6 +42,9 @@ async function checkStorage(storageKey) {
         return null;
     }
 }
+
+// initialize block message to false
+browser.storage.local.set({"blocked": false});
 
 // check for a clockInfo entry, if none is found, make one
 checkStorage("clockInfo").then(returned => {
@@ -65,9 +65,11 @@ function onError(error) {
 }
 
 
+// decrements the counter based on current time in ms, then saves it
 function countdown(clockInfo) {
-    clockInfo.clock = clockInfo.clock - timeInterval;
-    
+    clockInfo.clock = clockInfo.clock - (Date.now() - clockInfo.timestamp);
+    clockInfo.timestamp = Date.now();
+
     // Update localstorage info
     browser.storage.local.set({clockInfo});
 
@@ -79,7 +81,6 @@ function countdown(clockInfo) {
         intervalId = null;
     }
     else {
-        browser.storage.local.set({"blocked": false});
         console.log("Time remaining: ", clockInfo.clock);
     }
 }
@@ -93,10 +94,32 @@ function pauseTimer() {
 }
 
 
+// TODO
+function resetTimer() {
+    console.log("RESET TIMER NOT YET IMPLEMENTED");
+    checkStorage("clockInfo").then(info => {
+        info.clock = 60000;
+        console.log(info)
+        browser.storage.local.set({"clockInfo": info});
+        browser.storage.local.set({"blocked": false});
+    })
+
+}
+
+
+// gets date and time, resetting vars for tomorrow and day
+function reinitializeDate() {
+    let newDay = new Date();
+    tomorrow = newDay.setTime(24,0,0,0);
+}
+
+
 // Start timer
 function startTimer(clockInfo) {
-    console.log("[startTimer Function] ", clockInfo)
-    // check timer is not <= 0
+    clockInfo.timestamp = Date.now();
+    console.log("[startTimer Function] Clock time updated", clockInfo)
+
+    // check timer is not <= 0 
     if (clockInfo.clock <= 0) {
         browser.storage.local.set({"blocked": true});
         console.log("Timer has ended");
@@ -113,13 +136,19 @@ function startTimer(clockInfo) {
          * Because of this, the countdown must be called inside an inline function. 
          */
         intervalId = setInterval(function () {
-            countdown(clockInfo);
-            console.log(clockInfo.clock);
+            // if date has rolled over, reinitialize Date and reset timer
+            if (clockInfo.timestamp >= tomorrow) {
+                console.log("New day, resetting timer");
+                reinitializeDate();
+                resetTimer(clockInfo);
+            }
+            else {
+                countdown(clockInfo);
+            }
         },timeInterval);
     }
-    else{
-        countdown(clockInfo);
-        console.log(clockInfo);
+    else {
+        console.log("Timer already running", clockInfo);
     }
 };
 

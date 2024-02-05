@@ -15,6 +15,11 @@
         "scripts": ["scripts/timer_v2.js"]
     },
 
+    "browser_action": {
+        "default_icon": "icons/youtimer_icon_v2_32.png",
+        "default_popup": "popup/youtimer.html"
+    },
+
     "content_scripts": [
         {
             "matches": ["*://*.youtube.com/watch*"],
