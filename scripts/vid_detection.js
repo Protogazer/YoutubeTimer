@@ -3,27 +3,36 @@
  * Detects video playback state then messages timer
  */
 
+// wait for element to exist code: https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
+
 console.log("vid_detection.js Loaded!")
 
-// wait for page to load, then query for video element
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", queryVideo)
-}
-else {
-    queryVideo();
+const videoSelector = "#movie_player video";
+
+// check for video element, if not ready, create observer to listen for it. Return element when available.
+function waitForVid() {
+    return new Promise(resolve => {
+        if (document.querySelector(videoSelector)) {
+            return resolve(document.querySelector(videoSelector));
+        }
+        
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(videoSelector)) {
+                observer.disconnect();
+                resolve(document.querySelector(videoSelector));
+            }
+        });
+
+        observer.observe(document.body, {childList: true, subtree: true});
+    });
 }
 
-// queries for video on page
-function queryVideo() {
-    console.log("finding video")
-    const video = document.querySelector("video");
-    if (video) {
-        startListener(video);
-    }
-    else {
-        console.log("no video found.");
-    }
-}
+
+waitForVid().then((vidId) => {
+    console.log("Video player found!");
+    startListener(vidId);
+});
+
 
 // create listener for video play event
 function startListener(videoId) {
@@ -58,6 +67,4 @@ function messageTimer(message) {
 
 /** 
  * TODO: Detect when page is closed or changed, and send stop message
- * OR loop the send message function every x seconds, 
- * and the timer will decrement accordingly
  */
