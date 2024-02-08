@@ -35,7 +35,7 @@ async function checkStorage(storageKey) {
     let gettingItem = await browser.storage.local.get(storageKey);
 
     if (gettingItem[storageKey]) {
-        console.log("Found entry", gettingItem[storageKey]);
+        console.log("Found entry in storage:", gettingItem[storageKey]);
         return Promise.resolve(gettingItem[storageKey]);
     }
     else {
@@ -49,7 +49,7 @@ browser.storage.local.set({"blocked": false});
 // check for a clockInfo entry, if none is found, make one
 checkStorage("clockInfo").then(returned => {
     if (!returned) {
-        console.log("creating clock info");
+        console.log("saving clock info");
         browser.storage.local.set({"clockInfo": initialClockInfo}).then(setStorageItem, onError);
     }
 })
@@ -97,11 +97,12 @@ function pauseTimer() {
 // TODO
 function resetTimer() {
     console.log("RESET TIMER NOT YET IMPLEMENTED");
-    checkStorage("clockInfo").then(info => {
-        info.clock = 60000;
-        console.log(info)
-        browser.storage.local.set({"clockInfo": info});
+    checkStorage("clockInfo").then(timer => {
+        timer.clock = 60000;
+        console.log("Timer:", timer)
+        browser.storage.local.set({"clockInfo": timer});
         browser.storage.local.set({"blocked": false});
+        console.log("Timer has been reset")
     })
 
 }
