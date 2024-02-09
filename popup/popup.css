@@ -9,4 +9,47 @@ h2 {
     font-family: Arial;
     text-align: center;
     font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+#timerDisplay {
+    font-size: 3.4em;
+    font-family: monospace;
+    color: red;
+    text-align: center;
+    margin: 10px 0px 30px 0px;
+}
+
+.timerOutput {
+    width: 300px;
+}
+
+input {
+    text-align: center;
+    font-family: Arial;
+    font-size: large;
+}
+
+input[type=number] {
+    /* display: inline-block; */
+    display: block;
+    box-sizing: border-box;
+    width: 80%;
+    margin: auto;
+    padding: 10px;
+
+    /* remove arrows on firefox*/
+    -moz-appearance: textfield;
+}
+
+input[type=submit] {
+    display: block;
+    cursor: pointer;
+    margin: auto;
+    width: 80%;
+    padding: 6px;
+}
+
+.hidden {
+    display: none;
 }

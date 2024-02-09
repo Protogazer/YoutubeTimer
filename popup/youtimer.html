@@ -2,9 +2,19 @@
 <html lang="en">
     <header>
         <link rel="stylesheet" href="popup.css">
+        <script src="popup.js"></script>
     </header>
     <body>
-        <h2>THIS IS A TEST</h2>
-        <p>Just Checking Things Out</p>
+        <h2>You<i>Timer</i></h2>
+        <div class="timerOutput">
+            <p id="timerDisplay">Time Remaining</p>
+        </div>
+        <div>
+            <!-- hide until a button is pressed to change it -->
+            <form id="setMinutes" class="hidden">
+                <input type="number" id="xMinutes" placeholder="Minutes"><br>
+                <input type="submit" value="Set Timer">
+            </form>
+        </div>
     </body>
 </html>
