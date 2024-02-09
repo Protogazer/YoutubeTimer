@@ -22,8 +22,8 @@ var clock = (minutes * milliseconds);
 var tomorrow = new Date();
 tomorrow.setHours(24,0,0,0);
 
-// create clock object with time remaining and timestamp from when object last reset.
-var initialClockInfo = {clock:clock, timestamp:Date.now()};
+// create clock object with time remaining, timestamp from when object last reset, and running status of timer
+var initialClockInfo = {clock:clock, timestamp:Date.now(), running:false};
 console.log("Initializing Clock:", initialClockInfo)
 
 // create var for interval to save and call Id from
@@ -77,6 +77,7 @@ function countdown(clockInfo) {
     if (clockInfo.clock <= 0 ) {
         console.log("BOOM!");
         browser.storage.local.set({"blocked": true});
+        clockInfo.running = false;
         clearInterval(intervalId);
         intervalId = null;
     }
@@ -90,6 +91,10 @@ function countdown(clockInfo) {
 function pauseTimer() {
     clearInterval(intervalId);
     intervalId = null;
+    checkStorage("clockInfo").then(timer => {
+        timer.running = false;
+        browser.storage.local.set({"clockInfo":timer});
+    })
     console.log("Timer Paused");
 }
 
@@ -118,6 +123,7 @@ function reinitializeDate() {
 // Start timer
 function startTimer(clockInfo) {
     clockInfo.timestamp = Date.now();
+    clockInfo.running = true;
     console.log("[startTimer Function] Clock time updated", clockInfo)
 
     // check timer is not <= 0 
