@@ -116,7 +116,7 @@ function resetTimer() {
 // gets date and time, resetting vars for tomorrow and day
 function reinitializeDate() {
     let newDay = new Date();
-    tomorrow = newDay.setTime(24,0,0,0);
+    tomorrow = newDay.setHours(24,0,0,0);
 }
 
 
