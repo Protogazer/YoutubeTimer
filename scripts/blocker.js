@@ -6,6 +6,8 @@
 // TODO: only block the video element if possible
 // or replace graphic on screen. Do more than blank it
 
+// TODO: start countdown to midnight once blocker has activated
+
 // use storage.onChanged to detect block status
 browser.storage.local.onChanged.addListener(checkStatus);
 
