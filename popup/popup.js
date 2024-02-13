@@ -1,16 +1,70 @@
 // code modified from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_countdown
 
- /**
-  * TODO
-  * The countdown timer will not react to a video ending, and will contine as long as the popup is open.
-  * This will only be an issue is someone never clicks off the popup to anything else on the browser.
-  * I consider this acceptable... for now.
-  */
+/**
+ * TODO
+ * The countdown timer will not react to a video ending, and will contine as long as the popup is open.
+ * This will only be an issue is someone never clicks off the popup to anything else on the browser.
+ * I consider this acceptable... for now.
+ */
+
+const minutesInDay = 1440;
+const millisecondsPerMinute = 60000;
 
 document.addEventListener("DOMContentLoaded", (event) => {
     console.log("doc loaded, displaying time")
+    docEventListeners();
+    // startListeners();
     let checking = checkStorage("clockInfo").then(displayCountdown, onError)
 })
+
+
+function docEventListeners() {
+    // start event listener for cog settings menu
+    document.getElementById("cog").addEventListener("click", (event) => {
+        let settings = document.getElementById("settingsMenu");
+        if (settings.classList.contains("hidden")) {
+            document.getElementById("cog").classList.add("rotate90");
+            settings.classList.remove("hidden");
+        }
+        else {
+            document.getElementById("cog").classList.remove("rotate90");
+            settings.classList.add("hidden");
+        }
+    })
+
+    // start event listener for minutes submit button
+    document.getElementById("setMinutes").addEventListener("click", () => {
+        setMinutes(document.getElementById("xMinutes"));
+    })
+}
+
+
+// Overwrites timer's clock attribute in milliseconds
+// TODO save to storage as default minutes going forward (need new storage item for that, plus small modification to initial clock vars in timer.js)
+function setMinutes(input) {
+    console.log(input)
+    if (input.valueAsNumber > 0 && input.valueAsNumber < minutesInDay) {
+        if (!document.getElementById("minutesValueError").classList.contains("hidden")) {
+            document.getElementById("minutesValueError").classList.add("hidden");
+        }
+        let minutes = input.valueAsNumber * millisecondsPerMinute;
+        let storageCall = checkStorage("clockInfo").then((storageItem) => {
+            if (storageItem.clock) {
+                storageItem.clock = minutes;
+                browser.storage.local.set({"clockInfo": storageItem});
+                displayCountdown(storageItem);
+            }
+            else {
+                console.log("[popup.js setMinutes()] ERROR: could not locate clockInfo");
+            }
+        })
+    }
+    else {
+        console.log("[popup.js setMinutes()] ERROR: Minutes value must be greater than 0 and less than 1440");
+        document.getElementById("minutesValueError").classList.remove("hidden");
+    }
+}
+
 
 function displayCountdown(clockInfo) {
     // Set the date we're counting down to

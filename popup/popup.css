@@ -12,6 +12,29 @@ h2 {
     margin-bottom: 5px;
 }
 
+#cog {
+    width: 24px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    transition: all .2s ease-in;
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+#minutesValueError {
+    text-align: center;
+    color: red;
+}
+
+#settingsMenu {
+    width: 300px;
+    padding-bottom: 15px;
+}
+
 #timerDisplay {
     font-size: 3.4em;
     font-family: monospace;
@@ -42,7 +65,10 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-input[type=submit] {
+#setMinutes {
+    text-align: center;
+    font-family: Arial;
+    font-size: large;
     display: block;
     cursor: pointer;
     margin: auto;
