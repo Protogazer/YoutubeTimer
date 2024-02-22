@@ -80,6 +80,16 @@ function displayCountdown(clockInfo) {
     // Set the date we're counting down to
     var timeRemaining = new Date().getTime()  + clockInfo.clock;
 
+    // calculate the distance to the countdown, only once since the timer is not running
+    var staticDistance = timeRemaining - new Date().getTime();
+
+    // Time calculations for hours, minutes and seconds
+    var hours = Math.floor((staticDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((staticDistance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((staticDistance % (1000 * 60)) / 1000);
+
+    document.getElementById("timerDisplay").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+
     if (clockInfo.running === true) {
         // Update the count down every 1 second
         var x = setInterval(function() {
@@ -105,22 +115,10 @@ function displayCountdown(clockInfo) {
                 document.getElementById("timerDisplay").innerHTML = "Timer Ended";
             }
         }, 1000);
-    } else {
-        // calculate the distance to the countdown, only once since the timer is not running
-        var staticDistance = timeRemaining - new Date().getTime();
-
-        // Time calculations for hours, minutes and seconds
-        var hours = Math.floor((staticDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((staticDistance % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((staticDistance % (1000 * 60)) / 1000);
-
-        document.getElementById("timerDisplay").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
-
-        // If the count down is over, write some text 
-        if (staticDistance <= 0) {
-            clearInterval(x);
-            document.getElementById("timerDisplay").innerHTML = "Timer Ended";
-        }
+    } else if (staticDistance <= 0){
+        // If the count down is over, write some text
+        clearInterval(x);
+        document.getElementById("timerDisplay").innerHTML = "Timer Ended";
     }
 }
 
