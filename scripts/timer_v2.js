@@ -105,15 +105,25 @@ function pauseTimer() {
 
 
 // TODO
-function resetTimer() {
+function resetTimer(clockInfo) {
     console.log("RESET TIMER NOT FULLY IMPLEMENTED");
-    checkStorage("clockInfo").then(timer => {
-        timer.clock = timer.defaultMin;
-        console.log("Timer:", timer)
-        browser.storage.local.set({"clockInfo": timer});
+    if (!clockInfo) {
+        console.log("Getting clockInfo");
+        checkStorage("clockInfo").then(timer => {
+            timer.clock = timer.defaultMin;
+            console.log("Timer:", timer)
+            browser.storage.local.set({"clockInfo": timer});
+            browser.storage.local.set({"blocked": false});
+            console.log("Timer has been reset")
+        })
+    }
+    else {
+        clockInfo.clock = clockInfo.defaultMin;
+        clockInfo.timestamp = Date.now(); // Leaving this in for now, may remove if problematic for other resetting
+        browser.storage.local.set({"clockInfo": clockInfo});
         browser.storage.local.set({"blocked": false});
-        console.log("Timer has been reset")
-    })
+        console.log("Timer has been reset");
+    }
 
 }
 
@@ -131,8 +141,14 @@ function startTimer(clockInfo) {
     clockInfo.running = true;
     console.log("[startTimer Function] Clock time updated", clockInfo)
 
+    // if date rolls over, reset timer and tomorrow's date
+    if (clockInfo.timestamp >= tomorrow) {
+        console.log("New day, resetting timer");
+        reinitializeDate();
+        resetTimer(clockInfo);
+    }   
     // check timer is not <= 0 
-    if (clockInfo.clock <= 0) {
+    else if (clockInfo.clock <= 0) {
         browser.storage.local.set({"blocked": true});
         console.log("Timer has ended");
 
