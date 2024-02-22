@@ -30,6 +30,15 @@ function block() {
     document.body.style.display = "none";
 }
 
+// var newDayInterval = null;
+
+// // TODO checks every 30 seconds for midnight to elapse
+// function checkForNewDay() {
+//     newDayInterval = setInterval(30000) {
+
+//     }
+// }
+
 function unblock() {
     document.body.style.display = "block";
 }
