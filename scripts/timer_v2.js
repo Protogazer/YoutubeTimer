@@ -4,16 +4,18 @@
  * Timer is reset every day at midnight, and records the date (dd only) to storage.
  */
 
+// TODO detect navigation change or tab closure and stop timer appropriately
+
 console.log("YouTimer Loaded")
 
 // set default timer in minutes allow user to change
-var minutes = 1;
+var minutes = 5;
 
 // milliseconds per minute
 const milliseconds = 60000;
 
-// frequency the script updates at in ms
-const timeInterval = 5000;
+// frequency the script updates at in ms (default 1 second)
+const timeInterval = 1000;
 
 // create clock for countdown
 var clock = (minutes * milliseconds);
@@ -23,7 +25,7 @@ var tomorrow = new Date();
 tomorrow.setHours(24,0,0,0);
 
 // create clock object with time remaining, timestamp from when object last reset, and running status of timer
-var initialClockInfo = {clock:clock, timestamp:Date.now(), running:false};
+var initialClockInfo = {clock:clock, timestamp:Date.now(), running:false, defaultMin:clock};
 console.log("Initializing Clock:", initialClockInfo)
 
 // create var for interval to save and call Id from
@@ -51,6 +53,9 @@ checkStorage("clockInfo").then(returned => {
     if (!returned) {
         console.log("saving clock info");
         browser.storage.local.set({"clockInfo": initialClockInfo}).then(setStorageItem, onError);
+    }
+    else {
+        console.log("Clock info already exsists.")
     }
 })
 
@@ -101,9 +106,9 @@ function pauseTimer() {
 
 // TODO
 function resetTimer() {
-    console.log("RESET TIMER NOT YET IMPLEMENTED");
+    console.log("RESET TIMER NOT FULLY IMPLEMENTED");
     checkStorage("clockInfo").then(timer => {
-        timer.clock = 60000;
+        timer.clock = timer.defaultMin;
         console.log("Timer:", timer)
         browser.storage.local.set({"clockInfo": timer});
         browser.storage.local.set({"blocked": false});
@@ -147,7 +152,7 @@ function startTimer(clockInfo) {
             if (clockInfo.timestamp >= tomorrow) {
                 console.log("New day, resetting timer");
                 reinitializeDate();
-                resetTimer(clockInfo);
+                resetTimer();
             }
             else {
                 countdown(clockInfo);
@@ -177,6 +182,11 @@ function handleMessage(request, sender, sendResponse) {
         console.log("[timer.js] Pausing Timer.");
         sendResponse( { response: "pausing timer"});
         pauseTimer();
+    }
+    else if (request.status === "reset") {
+        console.log("[timer.js] Resetting timer")
+        sendResponse ( { response: "resetting timer"});
+        resetTimer();
     }
 };
 
