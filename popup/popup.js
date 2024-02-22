@@ -36,21 +36,31 @@ function docEventListeners() {
     document.getElementById("setMinutes").addEventListener("click", () => {
         setMinutes(document.getElementById("xMinutes"));
     })
+
+    // start event listener for reset timer button
+    document.getElementById("resetTimer").addEventListener("click", () => {
+        messageTimer("reset")
+        checkStorage("clockInfo").then((storageItem) => {
+            setMinutes(storageItem.defaultMin / millisecondsPerMinute);
+        })
+    })
 }
 
 
 // Overwrites timer's clock attribute in milliseconds
-// TODO save to storage as default minutes going forward (need new storage item for that, plus small modification to initial clock vars in timer.js)
 function setMinutes(input) {
-    console.log(input)
-    if (input.valueAsNumber > 0 && input.valueAsNumber < minutesInDay) {
-        if (!document.getElementById("minutesValueError").classList.contains("hidden")) {
-            document.getElementById("minutesValueError").classList.add("hidden");
-        }
-        let minutes = input.valueAsNumber * millisecondsPerMinute;
+    if (typeof input === 'object') {
+        input = input.valueAsNumber;
+    }
+
+    if (input > 0 && input < minutesInDay) {
+        document.getElementById("minutesValueError").classList.add("hidden");
+
+        let minutes = input * millisecondsPerMinute;
         let storageCall = checkStorage("clockInfo").then((storageItem) => {
             if (storageItem.clock) {
                 storageItem.clock = minutes;
+                storageItem.defaultMin = minutes;
                 browser.storage.local.set({"clockInfo": storageItem});
                 displayCountdown(storageItem);
             }
@@ -129,4 +139,21 @@ async function checkStorage(storageKey) {
 
 function onError(error) {
     console.log(error);
+}
+
+
+// message send and response handling
+function handleResponse(response) {
+    console.log("timer.js sent a response: ", response) ;
+}
+
+function handleError(error) {
+    console.log("printing error", error);
+}
+
+function messageTimer(message) {
+    const sending = browser.runtime.sendMessage({
+        status: message,
+    });
+    sending.then(handleResponse, handleError)
 }

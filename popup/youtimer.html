@@ -13,14 +13,14 @@
             <img src="../icons/cog.png" id="cog">
         </div>
         <div id="settingsMenu" class="hidden">
+            <h4>Options</h4>
             <!-- hide until a button is pressed to change it -->
             <p id="minutesValueError" class="hidden">Error. Minutes must be greater than 0 and less than 1440</p>
             
             <!-- TODO separate input into hours, minutes, seconds(?) -->
-            <form>
-                <input type="number" id="xMinutes" min="1" max="1439" placeholder="Minutes"><br>
-                <button type="button" id="setMinutes">Set Timer</button>
-            </form>
+            <input type="number" id="xMinutes" min="1" max="1439" placeholder="Minutes">
+            <button type="button" id="setMinutes">Set Timer</button>
+            <button type="button" id="resetTimer">Reset Timer</button>
         </div>
     </body>
 </html>

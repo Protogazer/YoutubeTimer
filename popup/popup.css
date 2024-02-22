@@ -1,8 +1,18 @@
 body {
     display: block;
     min-width: 300px;
-    background: #222222;
+    background: #1f1f20;
     color: rgb(255, 255, 255);
+}
+
+
+#cog {
+    width: 24px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    transition: all .15s ease-in;
 }
 
 h2 {
@@ -11,40 +21,15 @@ h2 {
     font-size: 2rem;
     margin-bottom: 5px;
 }
-
-#cog {
-    width: 24px;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    cursor: pointer;
-    transition: all .2s ease-in;
-}
-
-.rotate90 {
-    transform: rotate(90deg);
-}
-
-#minutesValueError {
+h4 {
+    font-family: Arial;
     text-align: center;
-    color: red;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
 }
 
-#settingsMenu {
-    width: 300px;
-    padding-bottom: 15px;
-}
-
-#timerDisplay {
-    font-size: 3.4em;
-    font-family: monospace;
-    color: red;
-    text-align: center;
-    margin: 10px 0px 30px 0px;
-}
-
-.timerOutput {
-    width: 300px;
+.hidden {
+    display: none;
 }
 
 input {
@@ -55,27 +40,72 @@ input {
 
 input[type=number] {
     /* display: inline-block; */
-    display: block;
     box-sizing: border-box;
+    display: block;
+    margin: 0 auto;
+    padding: 6px;
     width: 80%;
-    margin: auto;
-    padding: 10px;
 
     /* remove arrows on firefox*/
     -moz-appearance: textfield;
 }
 
-#setMinutes {
+#minutesValueError {
     text-align: center;
-    font-family: Arial;
-    font-size: large;
-    display: block;
-    cursor: pointer;
-    margin: auto;
-    width: 80%;
-    padding: 6px;
+    color: rgb(230, 56, 56);
 }
 
-.hidden {
-    display: none;
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+#settingsMenu {
+    width: 300px;
+    padding-bottom: 15px;
+}
+
+#timerDisplay {
+    font-size: 3.4em;
+    font-family: monospace;
+    color: rgb(230, 56, 56);
+    text-align: center;
+    margin: 10px 0px 30px 0px;
+}
+
+.timerOutput {
+    width: 300px;
+}
+
+/* ------ BUTTONS ------ */
+button {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    font-family: Arial;
+    font-size: large;
+    margin: 10px auto;
+    padding: 6px;
+    text-align: center;
+    text-decoration: none;
+    transition-duration: 0.3s;
+    width: 80%;
+}
+
+#resetTimer {
+    background-color: rgb(230, 56, 56);
+    color: white;
+}
+
+#resetTimer:hover {
+    background-color: rgb(143, 0, 0);
+    color: #ffffff;
+}
+
+#setMinutes {
+    background-color: rgb(80, 187, 80);
+    color: white;
+}
+#setMinutes:hover {
+    background-color: rgb(16, 117, 16);
 }
