@@ -2,6 +2,8 @@
 
 /**
  * TODO
+ * timer doesn't reset properly while video is playing
+ * 
  * The countdown timer will not react to a video ending, and will contine as long as the popup is open.
  * This will only be an issue is someone never clicks off the popup to anything else on the browser.
  * I consider this acceptable... for now.
