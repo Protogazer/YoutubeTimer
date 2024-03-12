@@ -45,6 +45,11 @@ function startListener(videoId) {
         console.log("[vid_detection.js] video paused.")
         messageTimer("paused")
     })
+    // videoId.addEventListener("emptied", (event) => {
+    //     console.log("[vid_detection.js] EMPTIED")
+    //     messageTimer("paused")
+    // })
+    // TODO JUST POLL THE DATA WITH EVERY TICK, IF THE PAGE CLOSES OR CHANGES IT STAYS ACCURATE
 }
 
 
@@ -64,6 +69,7 @@ function messageTimer(message) {
     sending.then(handleResponse, handleError)
 }
 
+// listen for message from timer.js to recheck the tab's info
 
 /** 
  * TODO: Detect when page is closed or changed, and send stop message

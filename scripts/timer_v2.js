@@ -188,6 +188,7 @@ function handleMessage(request, sender, sendResponse) {
     // console.log("senderTab: ", senderTab);
 
     console.log(`Message.js sent a message: ${request.status}`)
+    console.log(sender);
 
     if (request.status === "playing") {
         console.log("[timer.js] Starting Timer");
@@ -208,3 +209,31 @@ function handleMessage(request, sender, sendResponse) {
 
 // listen for content script message
 browser.runtime.onMessage.addListener(handleMessage);
+
+
+
+
+
+function handleRemovedTab(tabId, removeInfo) {
+    console.log(`Tab: ${tabId} is closing`);
+    console.log(`Window: ${removeInfo.windowId}`);
+}
+
+function handleChangedTab(tabId, changeInfo) {
+    console.log(`Tab: ${tabId} changed`)
+    console.log(changeInfo);
+}
+
+
+// TODO If tab is closed or changed, ping the vid detection script for that tab, and get the video status
+// if there is no response, or an error, pause the timer, otherwise run timer accordingly
+browser.tabs.onRemoved.addListener(handleRemovedTab);
+
+
+
+// TODO send a message to vid_detection.js asking for video status. If no response in x time, pause timer.
+browser.tabs.onUpdated.addListener(handleChangedTab, {
+    urls: ["*://*.youtube.com/*"],
+    properties: ["title"]
+    // tabId: tabId from message
+});
